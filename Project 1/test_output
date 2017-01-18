@@ -1,0 +1,445 @@
+Packet Arrived: Tick When Packet Was Generated:12
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:1.0
+
+Packet Arrived: Tick When Packet Was Generated:13
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:3.0
+
+Packet Serviced: Tick When Packet Was Generated:13
+Tick When Packet Was Serviced:14
+Packet Size:1
+Packet Interarrival Time:3.0
+
+Packet Serviced: Tick When Packet Was Generated:12
+Tick When Packet Was Serviced:15
+Packet Size:1
+Packet Interarrival Time:1.0
+
+Packet Arrived: Tick When Packet Was Generated:16
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:2.0
+
+Packet Serviced: Tick When Packet Was Generated:16
+Tick When Packet Was Serviced:17
+Packet Size:1
+Packet Interarrival Time:2.0
+
+Packet Arrived: Tick When Packet Was Generated:18
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:2.0
+
+Packet Serviced: Tick When Packet Was Generated:18
+Tick When Packet Was Serviced:19
+Packet Size:1
+Packet Interarrival Time:2.0
+
+Packet Arrived: Tick When Packet Was Generated:20
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:0.0
+
+Packet Arrived: Tick When Packet Was Generated:21
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:2.0
+
+Packet Serviced: Tick When Packet Was Generated:21
+Tick When Packet Was Serviced:22
+Packet Size:1
+Packet Interarrival Time:2.0
+
+Packet Arrived: Tick When Packet Was Generated:23
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:3.0
+
+Packet Serviced: Tick When Packet Was Generated:23
+Tick When Packet Was Serviced:24
+Packet Size:1
+Packet Interarrival Time:3.0
+
+Packet Serviced: Tick When Packet Was Generated:20
+Tick When Packet Was Serviced:25
+Packet Size:1
+Packet Interarrival Time:0.0
+
+Packet Arrived: Tick When Packet Was Generated:26
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:2.0
+
+Packet Serviced: Tick When Packet Was Generated:26
+Tick When Packet Was Serviced:27
+Packet Size:1
+Packet Interarrival Time:2.0
+
+Packet Arrived: Tick When Packet Was Generated:28
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:0.0
+
+Packet Arrived: Tick When Packet Was Generated:29
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:3.0
+
+Packet Serviced: Tick When Packet Was Generated:29
+Tick When Packet Was Serviced:30
+Packet Size:1
+Packet Interarrival Time:3.0
+
+Packet Serviced: Tick When Packet Was Generated:28
+Tick When Packet Was Serviced:31
+Packet Size:1
+Packet Interarrival Time:0.0
+
+Packet Arrived: Tick When Packet Was Generated:32
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:2.0
+
+Packet Serviced: Tick When Packet Was Generated:32
+Tick When Packet Was Serviced:33
+Packet Size:1
+Packet Interarrival Time:2.0
+
+Packet Arrived: Tick When Packet Was Generated:34
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:0.0
+
+Packet Arrived: Tick When Packet Was Generated:35
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:3.0
+
+Packet Serviced: Tick When Packet Was Generated:35
+Tick When Packet Was Serviced:36
+Packet Size:1
+Packet Interarrival Time:3.0
+
+Packet Serviced: Tick When Packet Was Generated:34
+Tick When Packet Was Serviced:37
+Packet Size:1
+Packet Interarrival Time:0.0
+
+Packet Arrived: Tick When Packet Was Generated:38
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:2.0
+
+Packet Serviced: Tick When Packet Was Generated:38
+Tick When Packet Was Serviced:39
+Packet Size:1
+Packet Interarrival Time:2.0
+
+Packet Arrived: Tick When Packet Was Generated:40
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:1.0
+
+Packet Arrived: Tick When Packet Was Generated:41
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:3.0
+
+Packet Serviced: Tick When Packet Was Generated:41
+Tick When Packet Was Serviced:42
+Packet Size:1
+Packet Interarrival Time:3.0
+
+Packet Serviced: Tick When Packet Was Generated:40
+Tick When Packet Was Serviced:43
+Packet Size:1
+Packet Interarrival Time:1.0
+
+Packet Arrived: Tick When Packet Was Generated:44
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:0.0
+
+Packet Arrived: Tick When Packet Was Generated:45
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:1.0
+
+Packet Arrived: Tick When Packet Was Generated:46
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:0.0
+
+Packet Arrived: Tick When Packet Was Generated:47
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:2.0
+
+Packet Serviced: Tick When Packet Was Generated:47
+Tick When Packet Was Serviced:48
+Packet Size:1
+Packet Interarrival Time:2.0
+
+Packet Arrived: Tick When Packet Was Generated:49
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:3.0
+
+Packet Serviced: Tick When Packet Was Generated:49
+Tick When Packet Was Serviced:50
+Packet Size:1
+Packet Interarrival Time:3.0
+
+Packet Serviced: Tick When Packet Was Generated:46
+Tick When Packet Was Serviced:51
+Packet Size:1
+Packet Interarrival Time:0.0
+
+Packet Arrived: Tick When Packet Was Generated:52
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:3.0
+
+Packet Serviced: Tick When Packet Was Generated:52
+Tick When Packet Was Serviced:53
+Packet Size:1
+Packet Interarrival Time:3.0
+
+Packet Serviced: Tick When Packet Was Generated:45
+Tick When Packet Was Serviced:54
+Packet Size:1
+Packet Interarrival Time:1.0
+
+Packet Arrived: Tick When Packet Was Generated:55
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:2.0
+
+Packet Serviced: Tick When Packet Was Generated:55
+Tick When Packet Was Serviced:56
+Packet Size:1
+Packet Interarrival Time:2.0
+
+Packet Arrived: Tick When Packet Was Generated:57
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:0.0
+
+Packet Arrived: Tick When Packet Was Generated:58
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:3.0
+
+Packet Serviced: Tick When Packet Was Generated:58
+Tick When Packet Was Serviced:59
+Packet Size:1
+Packet Interarrival Time:3.0
+
+Packet Serviced: Tick When Packet Was Generated:57
+Tick When Packet Was Serviced:60
+Packet Size:1
+Packet Interarrival Time:0.0
+
+Packet Arrived: Tick When Packet Was Generated:61
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:0.0
+
+Packet Arrived: Tick When Packet Was Generated:62
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:3.0
+
+Packet Serviced: Tick When Packet Was Generated:62
+Tick When Packet Was Serviced:63
+Packet Size:1
+Packet Interarrival Time:3.0
+
+Packet Serviced: Tick When Packet Was Generated:61
+Tick When Packet Was Serviced:64
+Packet Size:1
+Packet Interarrival Time:0.0
+
+Packet Arrived: Tick When Packet Was Generated:65
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:3.0
+
+Packet Serviced: Tick When Packet Was Generated:65
+Tick When Packet Was Serviced:66
+Packet Size:1
+Packet Interarrival Time:3.0
+
+Packet Serviced: Tick When Packet Was Generated:44
+Tick When Packet Was Serviced:67
+Packet Size:1
+Packet Interarrival Time:0.0
+
+Packet Arrived: Tick When Packet Was Generated:68
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:1.0
+
+Packet Arrived: Tick When Packet Was Generated:69
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:1.0
+
+Packet Arrived: Tick When Packet Was Generated:70
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:0.0
+
+Packet Arrived: Tick When Packet Was Generated:71
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:0.0
+
+Packet Arrived: Tick When Packet Was Generated:72
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:3.0
+
+Packet Serviced: Tick When Packet Was Generated:72
+Tick When Packet Was Serviced:73
+Packet Size:1
+Packet Interarrival Time:3.0
+
+Packet Serviced: Tick When Packet Was Generated:71
+Tick When Packet Was Serviced:74
+Packet Size:1
+Packet Interarrival Time:0.0
+
+Packet Arrived: Tick When Packet Was Generated:75
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:0.0
+
+Packet Arrived: Tick When Packet Was Generated:76
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:0.0
+
+Packet Arrived: Tick When Packet Was Generated:77
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:3.0
+
+Packet Serviced: Tick When Packet Was Generated:77
+Tick When Packet Was Serviced:78
+Packet Size:1
+Packet Interarrival Time:3.0
+
+Packet Serviced: Tick When Packet Was Generated:76
+Tick When Packet Was Serviced:79
+Packet Size:1
+Packet Interarrival Time:0.0
+
+Packet Arrived: Tick When Packet Was Generated:80
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:3.0
+
+Packet Serviced: Tick When Packet Was Generated:80
+Tick When Packet Was Serviced:81
+Packet Size:1
+Packet Interarrival Time:3.0
+
+Packet Serviced: Tick When Packet Was Generated:75
+Tick When Packet Was Serviced:82
+Packet Size:1
+Packet Interarrival Time:0.0
+
+Packet Arrived: Tick When Packet Was Generated:83
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:3.0
+
+Packet Serviced: Tick When Packet Was Generated:83
+Tick When Packet Was Serviced:84
+Packet Size:1
+Packet Interarrival Time:3.0
+
+Packet Serviced: Tick When Packet Was Generated:70
+Tick When Packet Was Serviced:85
+Packet Size:1
+Packet Interarrival Time:0.0
+
+Packet Arrived: Tick When Packet Was Generated:86
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:1.0
+
+Packet Arrived: Tick When Packet Was Generated:87
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:2.0
+
+Packet Serviced: Tick When Packet Was Generated:87
+Tick When Packet Was Serviced:88
+Packet Size:1
+Packet Interarrival Time:2.0
+
+Packet Arrived: Tick When Packet Was Generated:89
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:2.0
+
+Packet Serviced: Tick When Packet Was Generated:89
+Tick When Packet Was Serviced:90
+Packet Size:1
+Packet Interarrival Time:2.0
+
+Packet Arrived: Tick When Packet Was Generated:91
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:3.0
+
+Packet Serviced: Tick When Packet Was Generated:91
+Tick When Packet Was Serviced:92
+Packet Size:1
+Packet Interarrival Time:3.0
+
+Packet Serviced: Tick When Packet Was Generated:86
+Tick When Packet Was Serviced:93
+Packet Size:1
+Packet Interarrival Time:1.0
+
+Packet Arrived: Tick When Packet Was Generated:94
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:1.0
+
+Packet Arrived: Tick When Packet Was Generated:95
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:0.0
+
+Packet Arrived: Tick When Packet Was Generated:96
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:2.0
+
+Packet Serviced: Tick When Packet Was Generated:96
+Tick When Packet Was Serviced:97
+Packet Size:1
+Packet Interarrival Time:2.0
+
+Packet Arrived: Tick When Packet Was Generated:98
+Tick When Packet Was Serviced:-1
+Packet Size:1
+Packet Interarrival Time:3.0
+
+Packet Serviced: Tick When Packet Was Generated:98
+Tick When Packet Was Serviced:99
+Packet Size:1
+Packet Interarrival Time:3.0
+
+Packet Serviced: Tick When Packet Was Generated:95
+Tick When Packet Was Serviced:100
+Packet Size:1
+Packet Interarrival Time:0.0
+

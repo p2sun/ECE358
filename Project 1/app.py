@@ -4,45 +4,56 @@ import numpy
 
 from packet import Packet
 packet_queue = []
+packet_arrival_time = 12
+packet_departure_time = -1
 
 num_of_ticks = 100
-remove_next_packet = -1
+idle_ticks = 0
+packet_length = 1
+transmission_rate = 1
 
+
+
+#calculates the number of ticks until the next packet is sent out
 def calc_arrival_time(lambda_factor):
- u= uniform_rv_generator() #generate random number between 0...1
+ u= random.random() #generate random number between 0...1
  arrival_time = ((-1/lambda_factor) * math.log(1-u) * 1000000)
- return arrival_time
-
-#this is our packet generator
-def generate_new_packet(tick, packet_size = 1):
-    return Packet(tick,packet_size)
-
-#def arrival(tick):
- #if t >= packet_arrival_time:
-  #packet_queue.append(new_packet)
-  #t_arrival= t + calc_arrival_time()
-  #t_departure= t+ (packet_size/transmission_rate) #Also need to consider packet loss case when queue is full
+ #return arrival_time
+ return math.floor(random.random() * 4)
 
 
-#def departure():
- #if t>=t_departure:
-  #packet_queue.pop()
+#create a packet, given the arrival time, packet size(default to 1) and the tick it was created on
+def create_new_packet(tick, interarrival_time, packet_size = packet_length):
+    return Packet(tick,interarrival_time, packet_size)
 
-
-def uniform_rv_generator():
-    return random.random()
-
-
-
-t_arrival = calc_arrival_time(100) #calculate first packet arrival time
-add_next_packet = math.floor(uniform_rv_generator() * 3)
-for tick in range(0, num_of_ticks+1):
-    if add_next_packet == tick:
-        add_next_packet = tick + math.floor(uniform_rv_generator() * 30)
-        packet = generate_new_packet(tick,packet_size=tick)
+#
+def packet_generator(tick,next_packet_arrive_tick, next_packet_departure_tick):
+    if tick >= next_packet_arrive_tick:
+        arrival_time = calc_arrival_time(1)
+        packet = create_new_packet(tick, arrival_time)
         packet_queue.append(packet)
-        print packet
-    #arrival(tick)
-   #departure()
+
+        next_packet_arrive_tick = tick + arrival_time
+        #calculate when next packet is serviced
+        next_packet_departure_tick = tick + (packet.get_packet_size() / transmission_rate)
+        print "Packet Arrived: " + str(packet)
+
+    return next_packet_arrive_tick, next_packet_departure_tick
+
+def packet_server(tick, next_packet_departure_time):
+ if tick >= next_packet_departure_time and len(packet_queue) > 0:
+     packet = packet_queue.pop()
+     packet.finished_processing(tick)
+     print "Packet Serviced: " + str(packet)
+
+
+
+
+
+
+t_arrival = calc_arrival_time(1) #calculate first packet arrival time
+for tick in range(0, num_of_ticks+1):
+   packet_arrival_time, packet_departure_time = packet_generator(tick,packet_arrival_time, packet_departure_time)
+   packet_server(tick,packet_departure_time)
 
 #create_report()
