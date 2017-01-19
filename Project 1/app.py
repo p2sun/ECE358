@@ -35,11 +35,12 @@ class packet_generator:
 
     #calculates the number of ticks until the next packet is sent out
     def calc_arrival_time(self):
+     convert_time_to_ticks =  1000000
      u = random.random() #generate random number between 0...1
-     arrival_time = ((-1/self.lambda_factor) * math.log(1-u) * 1000000)
+     arrival_time = ((-1/self.lambda_factor) * math.log(1-u) * convert_time_to_ticks)
 
      #return arrival_time
-     return math.floor(random.random() * 4)
+     return arrival_time
 
 
     #create a packet, given the arrival time, packet size(default to 1) and the tick it was created on
@@ -65,7 +66,7 @@ class packet_generator:
 
 class packet_server:
 
-    def __init__(self, queue_size=0, queue_limit=False):
+    def __init__(self, queue_size=0, queue_limit=False, transmission_rate, packet_size):
         self.idle_ticks = 0
 
         self.waiting_queue = deque()
@@ -77,6 +78,8 @@ class packet_server:
         self.departure_tick = -1
         self.idle_ticks = 0
         self.packets_sent = 0
+        self.transmission_rate = transmission_rate
+        self.packet_size = packet_size
 
     def get_average_waiting_queue_size(self, total_tick):
         return self.accumulated_packets_waiting_in_queue / total_tick
@@ -96,7 +99,7 @@ class packet_server:
         self.departure_tick = departure_tick
 
     #adds a packet to the queue so it waits to be processed by the server
-    def add_to_queue(self,packet):
+    def add_to_queue(self,packet, current_tick):
         #if the queue has a limit check if its filled
         if self.is_queue_limited:
             #if the number of items in the waiting queue is greater than
@@ -107,11 +110,17 @@ class packet_server:
                 return False
             else:
                 print "Packet Arrived:"+str(packet)
+                if self.get_waiting_packets_in_queue() == 0:
+                    next_departure_tick = current_tick + packet_size/transmission_rate
+                    self.set_next_packet_departure_tick(next_departure_tick)
                 self.waiting_queue.append(packet)
                 return True
         #if the queue has no limits, just add it to the waiting queue
         else:
             print "Packet Arrived:" + str(packet)
+            if self.get_waiting_packets_in_queue() == 0:
+                next_departure_tick = current_tick + packet_size / transmission_rate
+                self.set_next_packet_departure_tick(next_departure_tick)
             self.waiting_queue.append(packet)
             return True
 
@@ -124,6 +133,9 @@ class packet_server:
                 packet.finished_processing(current_tick)
                 print "Packet Serviced: " + str(packet)
                 self.packets_sent += 1
+                # update next departure tick
+                next_departure_tick = current_tick + packet_size/transmission_rate
+                self.set_next_packet_departure_tick(next_departure_tick)
             else:
                 #if there's nothing in the queue, there shouldn't be a departure tick
                 self.set_next_packet_departure_tick(departure_tick=-1)
