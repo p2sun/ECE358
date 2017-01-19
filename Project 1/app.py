@@ -163,6 +163,7 @@ if queue_limit:
 
 
 for current_tick in range(0, num_of_ticks+1):
+    print "Tick: "+ str(current_tick)
     #call the packet generator to try to generate a packet
     packet = simulation_packet_generator.try_generate_packet(current_tick)
 
@@ -177,4 +178,7 @@ for current_tick in range(0, num_of_ticks+1):
             simulation_packet_generator.update_packets_lost()
     simulation_packet_server.try_processing_packet(current_tick)
 
+print "Average Queue Size:" + simulation_packet_server.get_average_waiting_queue_size(num_of_ticks)
+print "Packets Lost: " + simulation_packet_generator.packet_lost
+print "Server Idle: " + simulation_packet_server.idle_ticks
 #create_report()
