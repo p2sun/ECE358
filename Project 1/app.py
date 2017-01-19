@@ -35,9 +35,9 @@ class packet_generator:
 
     #calculates the number of ticks until the next packet is sent out
     def calc_arrival_time(self):
-     convert_time_to_ticks =  1000000
+     convert_time_to_ticks =  1e-6
      u = random.random() #generate random number between 0...1
-     arrival_time = ((-1/self.lambda_factor) * math.log(1-u) * convert_time_to_ticks)
+     arrival_time = ((-1/self.lambda_factor) * math.log(1-u)) / convert_time_to_ticks
 
      #return arrival_time
      return arrival_time
@@ -66,7 +66,7 @@ class packet_generator:
 
 class packet_server:
 
-    def __init__(self, queue_size=0, queue_limit=False, transmission_rate, packet_size):
+    def __init__(self, queue_size=0, queue_limit=False, transmission_rate=0, packet_size=0):
         self.idle_ticks = 0
 
         self.waiting_queue = deque()
@@ -168,7 +168,7 @@ if queue_limit:
 
 
 simulation_packet_generator = packet_generator(lambda_factor=lambda_factor,packet_size=packet_size, transmission_rate=transmission_rate)
-simulation_packet_server = packet_server(queue_limit=False)
+simulation_packet_server = packet_server(queue_limit=False, packet_size=packet_size, transmission_rate=transmission_rate)
 if queue_limit:
     simulation_packet_server.set_queue_limit(queue_limit_size)
 
@@ -185,7 +185,7 @@ for current_tick in range(0, num_of_ticks+1):
         next_departure = simulation_packet_generator.get_next_packet_departure_time()
         simulation_packet_server.set_next_packet_departure_tick(departure_tick=next_departure)
 
-        packet_queued = simulation_packet_server.add_to_queue(packet)
+        packet_queued = simulation_packet_server.add_to_queue(packet,current_tick)
         if not packet_queued:
             simulation_packet_generator.update_packets_lost()
     simulation_packet_server.try_processing_packet(current_tick)
