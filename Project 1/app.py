@@ -3,14 +3,32 @@ import random
 import numpy
 
 from packet import Packet
-packet_queue = []
-packet_arrival_time = 12
-packet_departure_time = -1
 
-num_of_ticks = 100
-idle_ticks = 0
+#queue for packets waiting to be processed
+packet_queue = []
+
+#list of all packets that have been processed
+packet_finished_queue = []
+
+#used to specify the limit on the queue
+packet_queue_limit = -1
+#a flag used to represent if we're simulating with a finite queue
+finite_queue_size = False
+
+#variables used to hold the next time a packet is generated
+packet_arrival_time = 12
+#variable used to hold the next time a packet is going to be processed by the server
+packet_departure_time = -1
+#size of a packet
 packet_length = 1
+#number of memory units processed per unit of time measure
 transmission_rate = 1
+
+#number of ticks in the simulation
+num_of_ticks = 100
+#number of ticks where the server was idle
+idle_ticks = 0
+
 
 
 
@@ -45,6 +63,7 @@ def packet_server(tick, next_packet_departure_time):
      packet = packet_queue.pop()
      packet.finished_processing(tick)
      print "Packet Serviced: " + str(packet)
+     packet_finished_queue.append(packet)
 
 
 
