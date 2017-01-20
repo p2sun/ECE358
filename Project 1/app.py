@@ -21,8 +21,6 @@ class packet_generator:
 
     def update_packets_lost(self):
         self.packet_lost += 1
-    def get_next_packet_departure_time(self):
-        return self.next_packet_departure
 
     def get_next_packet_arrival_time(self):
         return self.next_packet_arrival
@@ -32,7 +30,6 @@ class packet_generator:
      convert_time_to_ticks =  1e-6
      u = random.random() #generate random number between 0...1
      arrival_time = ((-1/self.lambda_factor) * log(1-u)) / convert_time_to_ticks
-     print arrival_time
 
      #return arrival_time
      return arrival_time
@@ -40,7 +37,8 @@ class packet_generator:
 
     #create a packet, given the arrival time, packet size(default to 1) and the tick it was created on
     def create_new_packet(self, current_tick, interarrival_time):
-        return Packet(current_tick,interarrival_time, self.packet_size)
+        self.packets_generated += 1
+        return Packet(current_tick, self.packet_size)
 
     #tries to generate a new packet
     def try_generate_packet(self, current_tick):
@@ -62,9 +60,7 @@ class packet_generator:
 class packet_server:
 
     def __init__(self, queue_size=0, queue_limit=False, transmission_rate=0, packet_size=0):
-        self.idle_ticks = 0
-
-        self.waiting_queue = deque()
+        self.queue = deque()
         #this is a counter that adds up the number of empty cells in the queue each tick
         self.accumulated_packets_waiting_in_queue = 0
 
@@ -76,8 +72,10 @@ class packet_server:
         self.transmission_rate = transmission_rate
         self.packet_size = packet_size
 
+    def get_accumulated_waiting_queue_size(self):
+        return self.accumulated_packets_waiting_in_queue
     def get_average_waiting_queue_size(self, total_tick):
-        return self.accumulated_packets_waiting_in_queue / total_tick
+        return float(self.accumulated_packets_waiting_in_queue) / total_tick
 
     def update_accumulated_waiting_queue_size(self,size):
         self.accumulated_packets_waiting_in_queue += size
@@ -87,7 +85,7 @@ class packet_server:
         self.is_queue_limited = True
 
     def get_waiting_packets_in_queue(self):
-        return len(self.waiting_queue)
+        return len(self.queue)
 
     #the generator uses this to set the next departure tick
     def set_next_packet_departure_tick(self, departure_tick):
@@ -105,32 +103,50 @@ class packet_server:
                 return False
             else:
                 print "Packet Arrived:"+str(packet)
+                self.update_accumulated_waiting_queue_size(1)
                 if self.get_waiting_packets_in_queue() == 0:
+                    packet.start_server_processing(current_tick)
                     next_departure_tick = current_tick + packet_size/transmission_rate
                     self.set_next_packet_departure_tick(next_departure_tick)
-                self.waiting_queue.append(packet)
+                self.queue.append(packet)
                 return True
         #if the queue has no limits, just add it to the waiting queue
         else:
             print "Packet Arrived:" + str(packet)
+            self.update_accumulated_waiting_queue_size(1)
             if self.get_waiting_packets_in_queue() == 0:
+                packet.start_server_processing(current_tick)
                 next_departure_tick = current_tick + packet_size / transmission_rate
                 self.set_next_packet_departure_tick(next_departure_tick)
-            self.waiting_queue.append(packet)
+            self.queue.append(packet)
             return True
 
 
     def try_processing_packet(self, current_tick):
         if current_tick >= self.departure_tick:
             # to process next packet, the function needs to know what tick its currently on
-            if self.get_waiting_packets_in_queue() > 0:
-                packet = self.waiting_queue.popleft()
+            packets_waiting = self.get_waiting_packets_in_queue()
+            if packets_waiting > 0:
+                packet = self.queue.popleft()
                 packet.finished_processing(current_tick)
                 print "Packet Serviced: " + str(packet)
+                print "Current Packets in Queue:" + str(self.get_waiting_packets_in_queue())
+                print "Current Accumulated Packets in Queue: " + str(self.get_accumulated_waiting_queue_size())
                 self.packets_sent += 1
+                packets_waiting -= 1
+
                 # update next departure tick
-                next_departure_tick = current_tick + packet_size/transmission_rate
+                if packets_waiting == 0:
+                    next_departure_tick = -1
+                else:
+                    #start processing the next packet, update the departure time to match when that packet is sent
+                    next_departure_tick = current_tick + packet_size/transmission_rate
+                    #update the packet's start time for when its being processed
+                    self.queue[0].start_server_processing(current_tick)
+
                 self.set_next_packet_departure_tick(next_departure_tick)
+
+
             else:
                 #if there's nothing in the queue, there shouldn't be a departure tick
                 self.set_next_packet_departure_tick(departure_tick=-1)
@@ -177,19 +193,18 @@ for current_tick in range(0, num_of_ticks+1):
     #if you get a packet, add it to the queue
     if packet != False:
 
-        next_departure = simulation_packet_generator.get_next_packet_departure_time()
-        print next_departure
-        simulation_packet_server.set_next_packet_departure_tick(departure_tick=next_departure)
-
         packet_queued = simulation_packet_server.add_to_queue(packet,current_tick)
         if not packet_queued:
             simulation_packet_generator.update_packets_lost()
     simulation_packet_server.try_processing_packet(current_tick)
 
+accumulated_queue_size = simulation_packet_server.get_accumulated_waiting_queue_size()
 average_queue_size = simulation_packet_server.get_average_waiting_queue_size(num_of_ticks)
 total_packets_lost = simulation_packet_generator.packet_lost
 idle_ticks = simulation_packet_server.idle_ticks
-print "Average Queue Size:" + str(average_queue_size)
+
+print "Total Number of Packets in Waiting Queue:" + str(accumulated_queue_size)
+print "Average Number of Packets in Queue Per Tick:" + str(average_queue_size)
 print "Packets Lost: " + str(total_packets_lost)
 print "Server Idle: " + str(idle_ticks)
 #create_report()
