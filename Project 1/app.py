@@ -1,17 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import math
+from math import log
 import random
 from collections import deque
 import numpy
 
 from packet import Packet
-
-
-
-
-
-
 
 class packet_generator:
 
@@ -37,7 +31,8 @@ class packet_generator:
     def calc_arrival_time(self):
      convert_time_to_ticks =  1e-6
      u = random.random() #generate random number between 0...1
-     arrival_time = ((-1/self.lambda_factor) * math.log(1-u)) / convert_time_to_ticks
+     arrival_time = ((-1/self.lambda_factor) * log(1-u)) / convert_time_to_ticks
+     print arrival_time
 
      #return arrival_time
      return arrival_time
@@ -175,7 +170,7 @@ if queue_limit:
 
 
 for current_tick in range(0, num_of_ticks+1):
-    print "Tick: "+ str(current_tick)
+
     #call the packet generator to try to generate a packet
     packet = simulation_packet_generator.try_generate_packet(current_tick)
 
@@ -183,6 +178,7 @@ for current_tick in range(0, num_of_ticks+1):
     if packet != False:
 
         next_departure = simulation_packet_generator.get_next_packet_departure_time()
+        print next_departure
         simulation_packet_server.set_next_packet_departure_tick(departure_tick=next_departure)
 
         packet_queued = simulation_packet_server.add_to_queue(packet,current_tick)
@@ -190,7 +186,10 @@ for current_tick in range(0, num_of_ticks+1):
             simulation_packet_generator.update_packets_lost()
     simulation_packet_server.try_processing_packet(current_tick)
 
-print "Average Queue Size:" + simulation_packet_server.get_average_waiting_queue_size(num_of_ticks)
-print "Packets Lost: " + simulation_packet_generator.packet_lost
-print "Server Idle: " + simulation_packet_server.idle_ticks
+average_queue_size = simulation_packet_server.get_average_waiting_queue_size(num_of_ticks)
+total_packets_lost = simulation_packet_generator.packet_lost
+idle_ticks = simulation_packet_server.idle_ticks
+print "Average Queue Size:" + str(average_queue_size)
+print "Packets Lost: " + str(total_packets_lost)
+print "Server Idle: " + str(idle_ticks)
 #create_report()
