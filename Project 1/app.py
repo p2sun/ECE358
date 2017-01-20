@@ -13,22 +13,41 @@ class Queue:
         self.limit = limit
     def __len__(self):
         return len(self.queue)
+
+    def front(self):
+        if self.size > 0:
+            return self.queue[0]
+        else:
+            return False
+
     def enqueue(self,item):
-        if(self.size < self.limit or self.limit == -1):
+        #if limit is -1 then its an unlimited queue
+        if (self.limit == -1):
             self.size += 1
             self.queue.append(item)
             return True
+        #if not the case, then the queue has a limit
         else:
-            return False
+            #only enqueue if the size is less than the limit
+            if(len(self.queue) < self.limit):
+                #increment the limit
+                self.size += 1
+                self.queue.append(item)
+                return True
+            else:
+                return False
     def dequeue(self):
         if(self.size > 0):
+            #decrement the size counter
             self.size -= 1
             return self.queue.popleft()
 
         else:
             return False
     def full(self):
-        return self.size == self.limit
+        return self.get_size() >= self.limit
+    def empty(self):
+        return self.size == 0
 
 
 packet_arrival_time = 12
@@ -45,7 +64,7 @@ time_to_ticks = 1e-6
 
 if test:
     total_ticks = 10000000
-    lambda_factor = 300
+    lambda_factor = 350
     packet_size = 2000
     transmission_rate = 8
     queue_limit_size = 10
@@ -65,7 +84,7 @@ else:
 service_time = math.ceil(packet_size/transmission_rate)
 
 
-packet_queue = Queue(limit=queue_limit_size)
+packet_queue = Queue(limit=10)
 
 
 
@@ -116,20 +135,23 @@ def arrival(current_tick):
     if current_tick >= t_arrival_tick:
         arrival_time = calc_arrival_time()
         packet = Packet(current_tick)
-        t_departure_tick = current_tick + service_time
-        #if the queue is full, the packet is dropped
-        if packet_queue.full():
-            packets_dropped += 1
-        else:
-            #enqueue the packet and calculate when the next packet is sent
-            packet.packet_service_start_tick = current_tick + packet_waiting_time
-            packet_queue.enqueue(packet)
+
+        #enqueue the packet and calculate when the next packet is sent
+        packet.packet_service_start_tick = current_tick + packet_waiting_time
+        enqueue_success = packet_queue.enqueue(packet)
+        t_arrival_tick = current_tick + arrival_time
+        if(enqueue_success):
             total_packets_enqueued += 1
-            t_arrival_tick = current_tick + arrival_time
-
-
-            #delay time for next packet arriving in queue is increased with a new packet waiting in the queue
+            # delay time for next packet arriving in queue is increased with a new packet waiting in the queue
             packet_waiting_time += service_time
+            if packet_queue.size == 1:
+                t_departure_tick = current_tick + service_time
+        else:
+            packets_dropped += 1
+
+
+
+
 
 
 
@@ -140,7 +162,11 @@ def arrival(current_tick):
 def departure(current_tick):
      global packet_waiting_time
      global total_soujourn_time
+     global t_departure_tick
      global total_packets_departed
+
+
+
      if current_tick > t_departure_tick:
          packet = packet_queue.dequeue()
          if packet:
@@ -148,6 +174,16 @@ def departure(current_tick):
             packet_waiting_time -= service_time
             total_soujourn_time += delay
             total_packets_departed += 1
+
+            #after we service a packet, check to see if more packets are in queue
+            #if so update next departure time
+            next_packet = packet_queue.front()
+            if next_packet != False:
+                t_departure_tick += service_time
+
+
+
+
 
 
 
@@ -166,7 +202,7 @@ print "Total Packets in Queue: " + str(total_packets_enqueued)
 print "Average Packets in Queue:" + str(average_packets_in_queue)
 print "Average Sojourn Time:" + str(average_sojourn_time)
 
-print "Total Packet Loss: " + str(packets_dropped)
+print "Percentage of Packet Loss: " + str(100 * float(packets_dropped) / total_packets_enqueued)
 print "Total Idle Time: " + str(percentage_of_idle_time) + '%'
 
 #create_report()
