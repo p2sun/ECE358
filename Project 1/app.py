@@ -8,16 +8,7 @@ from packet import Packet
 from Queue import Queue
 
 
-#represents when the next packet arrives into the queue
-packet_arrival_time = 12
-#represents when the next packet leaves the queue
-packet_departure_time = -1
-#counter which represents the total waiting time for a packet from arrival to departure of the queue
-packet_waiting_time = 0
-total_soujourn_time = 0
-total_packets_departed = 0
-total_packets_enqueued = 0
-total_packets_enqueued_over_ticks = 0
+
 
 test = True
 
@@ -162,7 +153,18 @@ E_T = 0.0
 E_N = 0.0
 P_idle = 0.0
 P_lost = 0.0
+
+
+
+#counter which represents the total waiting time for a packet from arrival to departure of the queue
+packet_waiting_time = 0
+total_soujourn_time = 0
+total_packets_departed = 0
+total_packets_enqueued = 0
+total_packets_enqueued_over_ticks = 0
+
 for i in range(0,5):
+
     t_arrival_tick = calc_arrival_time() #calculate first packet arrival time
     for tick in range(0, total_ticks):
        generate_packet(current_tick=tick)
@@ -173,6 +175,17 @@ for i in range(0,5):
     percentage_packet_lost = 100*float(packets_dropped)/total_packets_generated
     average_packets_in_queue = 100*total_packets_enqueued_over_ticks/float(total_ticks)
     percentage_of_idle_time = 100*float(idle_tick_count)/total_ticks
+
+    # clear all the counters and variables used in the simulation
+    # counter which represents the total waiting time for a packet from arrival to departure of the queue
+    packet_waiting_time = 0
+    total_soujourn_time = 0
+    total_packets_departed = 0
+    total_packets_enqueued = 0
+    total_packets_enqueued_over_ticks = 0
+
+    packet_queue = Queue(limit=queue_limit_size)
+
     E_T += average_sojourn_time
     E_N += average_packets_in_queue
     P_idle += percentage_of_idle_time
