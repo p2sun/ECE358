@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 import math
 import random
-import numpy
 
 from packet import Packet
 from Queue import Queue
@@ -13,14 +12,14 @@ from Queue import Queue
 test = True
 
 #constants to convert between units of time and ticks
-time_to_ticks = 1e7
+time_to_ticks = 1e6
 
 if test:
     total_ticks = 10000000
-    lambda_factor = 100
+    lambda_factor = 750
     packet_size = 2000
     transmission_rate = 1e6
-    queue_limit_size = -1
+    queue_limit_size = 10
 else:
     total_ticks = int(raw_input("Number of Ticks: ")) #TICK
     lambda_factor = float(raw_input("Lambda: ")) #λ
@@ -66,11 +65,10 @@ def calc_arrival_time():
     return arrival_time
 
 
-#create a packet, given the arrival time, packet size(default to 1) and the tick it was created on
-def create_new_packet(tick, interarrival_time):
-    return Packet(tick)
+
 
 #
+
 def generate_packet(current_tick):
     global packet_queue
     global total_packets_enqueued
@@ -173,7 +171,7 @@ for i in range(0,5):
 
     average_sojourn_time = (float(total_soujourn_time)/time_to_ticks)/float(total_packets_departed)
     percentage_packet_lost = 100*float(packets_dropped)/total_packets_generated
-    average_packets_in_queue = 100*total_packets_enqueued_over_ticks/float(total_ticks)
+    average_packets_in_queue = total_packets_enqueued_over_ticks/float(total_ticks)
     percentage_of_idle_time = 100*float(idle_tick_count)/total_ticks
 
     # clear all the counters and variables used in the simulation
@@ -183,6 +181,8 @@ for i in range(0,5):
     total_packets_departed = 0
     total_packets_enqueued = 0
     total_packets_enqueued_over_ticks = 0
+    idle_tick_count = 0
+    packets_dropped = 0
 
     packet_queue = Queue(limit=queue_limit_size)
 
