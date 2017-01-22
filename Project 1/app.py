@@ -26,10 +26,10 @@ time_to_ticks = 1e7
 
 if test:
     total_ticks = 10000000
-    lambda_factor = 450
+    lambda_factor = 100
     packet_size = 2000
     transmission_rate = 1e6
-    queue_limit_size = -
+    queue_limit_size = -1
 else:
     total_ticks = int(raw_input("Number of Ticks: ")) #TICK
     lambda_factor = float(raw_input("Lambda: ")) #λ
@@ -43,10 +43,10 @@ else:
         queue_limit_size = int(raw_input("Queue Length"))
 
 #round up the service time, if service time is 4.322 for example, that still takes 5 ticks
-service_time = math.ceil((packet_size/transmission_rate)*time_to_ticks)
+service_time = (packet_size/transmission_rate)*time_to_ticks
 
 
-packet_queue = Queue(limit=10)
+packet_queue = Queue(limit=queue_limit_size)
 
 
 
