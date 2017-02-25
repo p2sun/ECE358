@@ -6,12 +6,6 @@ import sys, getopt
 
 from collections import deque
 
-def calc_arrival_time(lambda_factor, time_to_ticks):
-    u = random.uniform(0,1)  #generate random number between 0...1
-    arrival_time = (-1/float(lambda_factor)) * math.log(1.0-u) * time_to_ticks
-    #return arrival_time
-    return arrival_time
-
 class Queue:
     def __init__(self, limit = -1):
         self.size = 0
@@ -80,24 +74,47 @@ class Packet:
 
 
 class Packet_Server:
-    def __init__(self,queue_size, first_packet_arrival_tick, service_period, time_to_ticks, lambda_factor):
+    def __init__(self,queue_size, service_period, time_to_ticks, lambda_factor):
         self.packet_queue = Queue(limit=queue_size)
+        #average time required to service a packet
         self.service_time = service_period
+        #the number of ticks in a second
         self.time_to_ticks = time_to_ticks
+        #lambda
         self.lambda_factor = lambda_factor
+        #counts the number of packets currently in the queue
         self.total_packets_enqueued = 0
+        #counts the number of packets put into the queue throughout the simulation
         self.total_packets_enqueued_over_ticks = 0
+        #counts the number of packets that were generated during the simulation
         self.total_packets_generated = 0
+        #counts the total amount of ticks that for all packets to be serviced
         self.total_soujourn_time = 0
+        #counts the total number of packets that were sent to the packet queue
         self.total_packets_departed = 0
+        #counts the total number of packets dropped during the simulation
         self.packets_dropped = 0
-        self.t_arrival_tick = first_packet_arrival_tick
+        #the tick for the next packet's arrival
+        self.t_arrival_tick = 0
+        #the tick for the next packet's departure
         self.t_departure_tick = -1
+        #counter for the number of ticks the packet server was idle
         self.idle_tick_count = 0
+        #delay between next packet's departure and service time
         self.packet_waiting_time = 0
 
-    def generate_packet(self, current_tick):
+    def calc_arrival_time(self):
+        u = random.uniform(0, 1)  # generate random number between 0...1
+        arrival_time = (-1 / float(self.lambda_factor)) * math.log(1.0 - u) * self.time_to_ticks
+        # return arrival_time
+        return arrival_time
 
+    #
+    # METHOD
+    # DESCRIPTION - simulates the generation of a packet, given the current tick, it will update the simulation values
+    # PARAMETERS - current tick, the current tick of the simulation
+    # RETURNS - Nothing
+    def generate_packet(self, current_tick):
         #get current number of packets in the queue and add it to our running counter
         current_packets_in_queue = self.packet_queue.size
         self.total_packets_enqueued_over_ticks += current_packets_in_queue
@@ -109,7 +126,7 @@ class Packet_Server:
         #check if its time to create a packet
         if current_tick >= self.t_arrival_tick:
             #update our arrival tick counter, this is the tick when the next packet is created
-            self.t_arrival_tick += calc_arrival_time(time_to_ticks=self.time_to_ticks, lambda_factor=self.lambda_factor)
+            self.t_arrival_tick += self.calc_arrival_time()
 
             #new packet object created with current_tick as the tick it was created at
             packet = Packet(current_tick)
@@ -129,9 +146,13 @@ class Packet_Server:
             else:
                 self.packets_dropped += 1
 
+
+    #
+    # METHOD
+    # DESCRIPTION - simulates the servicing of a packet, given the current tick, it will update the simulation values
+    # PARAMETERS - current tick, the current tick of the simulation
+    # RETURNS - Nothing
     def service_packet(self,current_tick):
-
-
          if current_tick >= self.t_departure_tick:
              packet = self.packet_queue.dequeue()
              if packet:
@@ -148,20 +169,56 @@ class Packet_Server:
          if self.packet_queue.front() != False:
              self.packet_waiting_time -= 1
 
-    def simulation_results(self):
+    #
+    # METHOD
+    # DESCRIPTION - returns the result of the simulation in an array
+    # PARAMETERS - total_ticks, the number of ticks the simulation was run for
+    # RETURN - array of 4 values, the average sojourn time, percentage of lost packets, average packets enqueued
+    #          and the percentage of simulation idle
+    def simulation_results(self, total_ticks):
         average_sojourn_time = (float(self.total_soujourn_time) / self.time_to_ticks) / float(self.total_packets_departed)
         percentage_packet_lost = 100*float(self.packets_dropped) / self.total_packets_generated
-        total_packets_enqueue = self.total_packets_enqueued_over_ticks
-        idle_ticks = self.idle_tick_count
-        return [average_sojourn_time, percentage_packet_lost, total_packets_enqueue, idle_ticks]
-E_T = 0.0
-E_N = 0.0
-P_idle = 0.0
-P_lost = 0.0
+        average_packets_enqueued = float(self.total_packets_enqueued_over_ticks) / total_ticks
+        percentage_idle = 100 * float(self.idle_tick_count) / total_ticks
+        return [average_sojourn_time, percentage_packet_lost, average_packets_enqueued, percentage_idle]
+
+    #
+    # METHOD -  run_simulation
+    # DESCRIPTION - runs the simulation of a server and packet generator configuration
+    # PARAMETERS - total_ticks is the number of ticks the simulation is run for
+    #
+    def run_simulation(self, total_ticks):
+        #clear all the variables used in the simulation
+        self.total_packets_enqueued = 0
+        self.total_packets_enqueued_over_ticks = 0
+        self.total_packets_generated = 0
+        self.total_soujourn_time = 0
+        self.total_packets_departed = 0
+        self.packets_dropped = 0
+        self.t_arrival_tick = self.calc_arrival_time()
+        self.t_departure_tick = -1
+        self.idle_tick_count = 0
+        self.packet_waiting_time = 0
+
+
+        #run the simulation
+        for tick in range(0, total_ticks):
+           self.generate_packet(current_tick=tick)
+           self.service_packet(current_tick=tick)
+        return self.simulation_results(total_ticks=total_ticks)
+
 
 def main(argv):
-    # Initialize and get variables for simulation
-    global E_T, E_N, P_idle, P_lost
+
+    #These are the values needed to find in the simulation
+    #Average Packet Sojourn Time
+    E_T = 0.0
+    #Average number of packets in queue
+    E_N = 0.0
+    #Percentage of simulation that packet server is idle
+    P_idle = 0.0
+    #Percentage of packets lost in simulation
+    P_lost = 0.0
 
 
     time_to_ticks = 1e6
@@ -175,37 +232,33 @@ def main(argv):
 
     service_time = (packet_size / transmission_rate) * time_to_ticks
 
+    #initialize the packet server
+    packet_server = Packet_Server(queue_size=queue_limit_size,
+                                  service_period=service_time,
+                                  time_to_ticks=time_to_ticks,
+                                  lambda_factor=lambda_factor)
+
+    #run the simulation five times
     for i in range(0,5):
+        results = packet_server.run_simulation(total_ticks=total_ticks)
 
-        t_arrival_tick = calc_arrival_time(lambda_factor=lambda_factor, time_to_ticks=time_to_ticks) #calculate first packet arrival time
-        packet_server = Packet_Server(queue_size = queue_limit_size,
-                                      first_packet_arrival_tick=t_arrival_tick,
-                                      service_period= service_time,
-                                      time_to_ticks = time_to_ticks,
-                                      lambda_factor = lambda_factor)
-        for tick in range(0, total_ticks):
-           packet_server.generate_packet(current_tick=tick)
-           packet_server.service_packet(current_tick=tick)
-
-
-        results = packet_server.simulation_results()
-
+        #get stats for the simulation
         average_sojourn_time = results[0]
         percentage_packet_lost = results[1]
-        average_packets_in_queue = float(results[2]) / total_ticks
-        percentage_of_idle_time =  100 * float(results[3]) / total_ticks
-
+        average_packets_in_queue = results[2]
+        percentage_of_idle_time =  results[3]
 
         E_T += average_sojourn_time
         E_N += average_packets_in_queue
         P_idle += percentage_of_idle_time
         P_lost += percentage_packet_lost
 
+    #take average of five simulation
     E_T /= 5.0
     E_N /= 5.0
     P_idle /= 5.0
     P_lost /= 5.0
-
+    #print it to console to show the values for the simulation
     print E_N, E_T, P_idle, P_lost
 
 if __name__ == "__main__":
