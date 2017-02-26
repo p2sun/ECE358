@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import sys, getopt
 
-from Packet_Server import Packet_Server
+from Node import Packet_Server
 
 def main(argv):
     #These are the values needed to find in the simulation
@@ -16,12 +16,14 @@ def main(argv):
     P_lost = 0.0
 
 
-    time_to_ticks = 1/(10e-6)
+    time_to_ticks = 1e6
     total_ticks = int(1e7)  # TICK
     lambda_factor = 700  # λ
     packet_size = 2000  # L
     transmission_rate = 1e6  # c
-    queue_limit_size = 25
+    queue_limit_size = -1
+    number_of_computers =  4 #N
+
 
 
 

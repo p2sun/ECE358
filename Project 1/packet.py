@@ -1,5 +1,4 @@
-import string
-class Packet:
+class Frame:
 
     def __init__(self, packet_generation_tick):
         self.packet_generation_tick = packet_generation_tick
