@@ -98,7 +98,7 @@ class Network:
             self.total_frame_transmission_delay += node_stats[1]
 
         throughput = float(self.frame_transmitted * self.packet_length) / float(self.total_ticks * self.time_to_ticks)
-        average_delay = float(self.total_transmission_delay) / float(self.frame_transmitted)
+        average_delay = float(self.total_frame_transmission_delay) / float(self.frame_transmitted)
         return [throughput, average_delay]
 
 
