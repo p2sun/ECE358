@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import sys
+import sys, csv
 from Network import Network
 
 def main():
@@ -12,7 +12,7 @@ def main():
 
 
     time_to_ticks = 10e-6
-    total_ticks = 10000000  # TICK
+    total_ticks = int(1e7)  # TICK
     lambda_factor = int(sys.argv[2])  # λ
     packet_size = 8000  # L
     number_of_computers =  int(sys.argv[1]) #N
@@ -33,22 +33,21 @@ def main():
                             persistent=persistent)
 
     #run the simulation five times
-    for i in xrange(0,3):
+    for i in xrange(0,5):
         results = network_simulation.run_simulation()
-        print results
         throughput = results[0]
         delay = results[1]
-        print throughput, delay
 
         E_T += throughput
         E_D += delay
-
-
-    #take average of five simulation
+    # take average of five simulation
     E_T /= 5.0
     E_D /= 5.0
-
-    #print it to console to show the values for the simulation
+    with open('simulation_results_persistent.csv', 'a') as testfile:
+        csv_writer = csv.writer(testfile, delimiter=',',
+                            quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        csv_writer.writerow([number_of_computers,lambda_factor, E_T, E_D, persistent])
     print number_of_computers,lambda_factor, E_T, E_D, persistent
+
 
 main()

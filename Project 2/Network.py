@@ -44,14 +44,23 @@ class Network:
                          arrival_rate=self.packet_arrival_rate,
                          persistent=self.persistent,
                          medium = self.transmission_medium)
-            node.set_next_frame_generated_tick(current_tick=0)
+            next_tick = node.set_next_frame_generated_tick(current_tick=0)
+            node.next_event_tick = next_tick + 1
             self.node_list.append(node)
 
-        for tick in xrange(0,self.total_ticks):
-            #iterate through each node and update its state
+        tick = 0
+        next_node_event = [0] * self.num_nodes
+        while (tick < self.total_ticks):
             for node in self.node_list:
+                index = node.node_id
                 #run the node during this tick
                 node.run_node(current_tick=tick)
+            for node in self.node_list:
+                index = node.node_id
+                next_node_event[index] = node.get_next_event(current_tick=tick)
+
+            tick = min(next_node_event)
+
 
 
         # go through each node and get transmission results
@@ -61,7 +70,7 @@ class Network:
             self.total_frame_transmission_delay += node_stats[1]
 
         throughput = float(self.frame_transmitted * self.packet_length) / float(self.total_ticks * self.time_to_ticks)
-        average_delay = float(self.total_frame_transmission_delay) / float(self.frame_transmitted)
+        average_delay = float(self.total_frame_transmission_delay * self.time_to_ticks) / float(self.frame_transmitted)
         return [throughput, average_delay]
 
 

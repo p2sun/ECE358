@@ -59,14 +59,17 @@ class Node:
         # 2 when transmitting on hub, 3 when transmitting on destination medium
         self.transmission_state = 0
 
+        self.next_event_tick = -1
+
     def get_transmission_end(self):
         return self.transmission_ends_tick
 
     def set_next_frame_generated_tick(self, current_tick):
         u = random.uniform(0, 1)  # generate random number between 0...1
-        tick_duration = (-1 / float(self.lambda_factor)) * math.log(1.0 - u) * self.time_to_ticks
+        tick_duration = (-1 / float(self.lambda_factor)) * math.log(1.0 - u) / self.time_to_ticks
         # return arrival_time
-        self.next_frame_generated = current_tick + tick_duration
+        self.next_frame_generated = math.ceil(current_tick + tick_duration)
+        return self.next_frame_generated
 
     def set_random_frame_destination(self):
         destination = random.randint(0,self.num_nodes-1)
@@ -89,6 +92,7 @@ class Node:
 
         #check if its time to create a frame
         if current_tick >= self.next_frame_generated:
+
             # update our arrival tick counter, this is the tick when the next frame is created
             self.set_next_frame_generated_tick(current_tick)
             # new frame object created with current_tick as the tick it was created at
@@ -97,12 +101,11 @@ class Node:
             self.frame_queue.enqueue(frame)
 
 
-
     def get_wait_duration(self):
         if self.persistent:
             return 0
         else:
-            return 1
+            return random.randint(0,1000)
 
     def collision_happened(self, current_tick):
         wait_time = self.frame_transmitted.collision_occured()
@@ -112,25 +115,35 @@ class Node:
             self.frame_errors += 1
             # go back to idle state
             self.state = "Idle"
+            self.next_event_tick = current_tick + 1
 
         else:
             # go back to backoff state
             self.state = "Backoff"
-            self.backoff_ends_tick = current_tick + wait_time
-
+            self.backoff_ends_tick = math.ceil(current_tick + wait_time + 1)
+            self.next_event_tick = self.backoff_ends_tick
     def sense_medium_busy(self, current_tick):
         return self.medium.sense_medium(self.node_id, current_tick=current_tick)
 
+    def get_next_event(self, current_tick):
+        if self.next_event_tick == -1:
+            self.next_event_tick = self.next_frame_generated + 1
+            return self.next_frame_generated
+        else:
+            return min(self.next_frame_generated,self.next_event_tick)
 
     def update_state(self, current_tick):
         self.medium.check_medium(current_tick=current_tick)
         if self.state == "Idle":
-            # Check if there are frames waiting to be transmitted
+            # Check if there are frames waiting to be transmitte
             next_frame = self.frame_queue.dequeue()
             if next_frame != False:
                 self.frame_transmitted = next_frame
                 self.state = "Sensing"
-                self.sensing_ends_tick = current_tick + self.sensing_tick_duration
+                self.sensing_ends_tick = current_tick + 1 + self.sensing_tick_duration
+                self.next_event_tick = self.sensing_ends_tick
+            else:
+                self.next_event_tick = self.next_frame_generated + 1
 
 
         if self.state == "Sensing":
@@ -138,7 +151,8 @@ class Node:
                 medium_busy = self.sense_medium_busy(current_tick)
                 if medium_busy:
                     self.state = "Wait"
-                    self.wait_ends_tick = current_tick + self.get_wait_duration()
+                    self.wait_ends_tick = current_tick + 1 + self.get_wait_duration()
+                    self.next_event_tick = self.wait_ends_tick
                 else:
                     # we can start transmission starting the next tick
                     self.state = "Transmit"
@@ -146,58 +160,58 @@ class Node:
                     # end tick for immediate physical layer
                     self.transmission_state = 1
                     self.transmission_begins = current_tick + 1
-                    self.transmission_ends_tick = current_tick + self.transmission_delay + 1
+
+                    self.transmission_ends_tick = math.ceil(current_tick + self.transmission_delay + 1)
                     # end tick for hub
-                    self.physical_layer_busy_until = current_tick + self.transmission_delay * 1/3 + 1
+                    self.physical_layer_busy_until = math.ceil(current_tick + self.transmission_delay * 1/3 + 1)
                     # end tick for destination physical layer
-                    self.hub_busy_until = current_tick + self.transmission_delay * 2/3 + 1
+                    self.hub_busy_until = math.ceil(current_tick + self.transmission_delay * 2/3 + 1)
                     # set a random destination of transmission
                     self.set_random_frame_destination()
 
+                    self.next_event_tick = self.transmission_begins
+
         elif self.state == "Wait":
             if current_tick == self.wait_ends_tick:
-                medium_busy = self.sense_medium_busy(current_tick=current_tick)
-                if medium_busy:
-                    self.wait_ends_tick = current_tick + self.get_wait_duration()
-                else:
                     self.state = "Sensing"
                     self.sensing_ends_tick = current_tick + self.sensing_tick_duration
+                    self.next_event_tick = self.sensing_ends_tick
         elif self.state == "Transmit":
             # if medium is busy, when we try to transmit a frame or when a collision has already occured
             # we go to the backoff state
             if self.transmission_state == 1:
                 if current_tick == self.transmission_begins:
+
                     transmit_success = self.medium.transmit_frame_on_layer(current_tick=current_tick, node_id=self.node_id,
-                                                    busy_until=self.physical_layer_busy_until)
+                                                    node=self, busy_until=self.physical_layer_busy_until)
+
+                    self.next_event_tick = self.physical_layer_busy_until
                     if transmit_success == False:
                         self.collision_happened(current_tick)
-
-
-                if current_tick > self.transmission_begins and current_tick < self.physical_layer_busy_until:
-                    if self.medium.check_collision(self.node_id):
-                        self.collision_happened(current_tick)
-
 
                 if current_tick == self.physical_layer_busy_until:
                     if self.medium.state_changed(self.node_id):
                         self.transmission_state = 2
+                        self.next_event_tick = self.hub_busy_until
+
                     else:
                         self.collision_happened(current_tick)
 
             if self.transmission_state == 2:
                 if current_tick == self.hub_busy_until:
                     self.transmission_state = 3
+                    self.next_event_tick = self.hub_busy_until + 1
             if self.transmission_state == 3:
                 if current_tick == self.hub_busy_until + 1:
+
                     transmit_success = self.medium.transmit_frame_on_layer(current_tick=current_tick,
                                                                            node_id=self.transmission_destination,
-                                                                           busy_until=self.transmission_ends_tick)
+                                                                           busy_until=self.transmission_ends_tick,
+                                                                           node=self)
+                    self.next_event_tick = self.transmission_ends_tick
                     if transmit_success == False:
                         self.collision_happened(current_tick)
 
-                if current_tick > self.hub_busy_until + 1 and current_tick < self.transmission_ends_tick:
-                    if self.medium.check_collision(self.transmission_destination):
-                        self.collision_happened(current_tick)
 
                 if current_tick == self.transmission_ends_tick:
                     if self.medium.state_changed(self.node_id):
@@ -209,6 +223,7 @@ class Node:
                         self.total_frames_successfully_sent += 1
                         self.transmission_state = 4
                         self.state = "Idle"
+                        self.next_event_tick = current_tick + 1
                     else:
                         self.collision_happened(current_tick)
 
@@ -217,7 +232,8 @@ class Node:
             # then go back to the sensing state
             if current_tick == self.backoff_ends_tick:
                 self.state = "Sensing"
-                self.sensing_ends_tick = current_tick + self.sensing_tick_duration
+                self.sensing_ends_tick = current_tick + 1 + self.sensing_tick_duration
+                self.next_event_tick = self.sensing_ends_tick
 
     #
     # METHOD
@@ -239,6 +255,7 @@ class Node:
         #clear all the variables used in the simulation
         self.generate_frame(current_tick)
         self.update_state(current_tick)
+
 
 
 
