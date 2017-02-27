@@ -3,7 +3,7 @@
 import sys, getopt
 from Network import Network
 
-def main(argv):
+def main():
     #These are the values needed to find in the simulation
     #Throughput of the network
     E_T = 0.0
@@ -14,10 +14,8 @@ def main(argv):
 
     time_to_ticks = 1e6
     total_ticks = int(1e7)  # TICK
-    lambda_factor = 700  # λ
+    lambda_factor = 4  # λ
     packet_size = 8000  # L
-    transmission_rate = 1e6  # c
-    queue_limit_size = -1
     number_of_computers =  4 #N
     LAN_speed = 1e6
     persistent = False
@@ -53,4 +51,4 @@ def main(argv):
     print E_T, E_D
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    main()

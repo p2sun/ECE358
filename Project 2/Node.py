@@ -11,7 +11,7 @@ class Node:
         self.num_nodes = num_nodes
         self.frame_queue = Queue()
         # average time required to transmit a frame
-        self.transmission_delay = transmission_delay
+        self.transmission_delay = 3
         # the number of ticks in a second
         self.time_to_ticks = time_to_ticks
         # lambda
@@ -38,7 +38,7 @@ class Node:
         self.sensing_tick_duration = 1
         # When the current frame's transmission ends
         self.transmission_ends_tick = 0
-
+        self.medium_in_use = False
 
         # Tick when the  transmission state ends
         self.transmission_ends_tick = -1
@@ -63,7 +63,7 @@ class Node:
         self.next_frame_generated = current_tick + tick_duration
 
     def set_random_frame_destination(self):
-        destination = random.randint(0,self.num_nodes)
+        destination = random.randint(0,self.num_nodes-1)
         self.transmission_destination = destination
 
     def get_frame_destination(self):
@@ -99,28 +99,31 @@ class Node:
             return 1
 
 
-    def sense_medium_busy(self, current_tick):
-        if current_tick <= self.physical_layer_busy_until:
-            return True
-        else:
-            return False
+    def sense_medium_busy(self):
+        return self.medium_in_use
 
     def set_medium_busy(self, busy_until):
         self.physical_layer_busy_until = busy_until
+        self.medium_in_use = True
+    def free_medium(self):
+        self.physical_layer_busy_until = -1
+        self.medium_in_use = False
 
     def update_state(self, current_tick):
+        if self.medium_in_use and current_tick > self.physical_layer_busy_until:
+            self.medium_in_use = False
         if self.state == "Idle":
             # Check if there are frames waiting to be transmitted
-            frames_waiting = self.frame_queue.size > 0
-            if frames_waiting:
-                self.frame_transmitted = self.frame_queue.dequeue()
+            next_frame = self.frame_queue.dequeue()
+            if next_frame != False:
+                self.frame_transmitted = next_frame
                 self.state = "Sensing"
                 self.sensing_ends_tick = current_tick + self.sensing_tick_duration
 
 
         if self.state == "Sensing":
             if current_tick == self.sensing_ends_tick:
-                medium_busy = self.sense_medium_busy(current_tick)
+                medium_busy = self.sense_medium_busy()
                 if medium_busy:
                     self.state = "Wait"
                     self.wait_ends_tick = current_tick + self.get_wait_duration()
@@ -139,7 +142,7 @@ class Node:
 
         elif self.state == "Wait":
             if current_tick == self.wait_ends_tick:
-                medium_busy = self.sense_medium_busy(current_tick)
+                medium_busy = self.sense_medium_busy()
                 if medium_busy:
                     self.wait_ends_tick = current_tick + self.get_wait_duration()
                 else:
@@ -148,9 +151,10 @@ class Node:
         elif self.state == "Transmit":
             # if medium is busy, when we try to transmit a frame or when a collision has already occured
             # we go to the backoff state
-            if self.sense_medium_busy(current_tick) or self.collision_occured:
+            if self.sense_medium_busy() or self.collision_occured:
                 # reset the collision occured flag
                 self.collision_occured = False
+                self.medium_in_use = False
                 # get the wait time from the transmitted frame
                 wait_time = self.frame_transmitted.collision_occured()
 
@@ -172,7 +176,7 @@ class Node:
                 elif current_tick <= self.hub_busy_until and current_tick > self.physical_layer_busy_until:
                     self.transmission_state = 2
                 else:
-                    if current_tick <= self.transmission_ends_tick and current_tick > self.physical_layer_busy_until:
+                    if current_tick <= self.transmission_ends_tick and current_tick > self.hub_busy_until:
                         self.transmission_state = 3
 
 

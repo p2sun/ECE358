@@ -44,8 +44,8 @@ class Network:
             node.set_next_frame_generated_tick(current_tick=0)
             self.node_list.append(node)
 
-
         for tick in range(0,self.total_ticks):
+
             #iterate through each node and update its state
             for node in self.node_list:
                 #run the node during this tick
@@ -53,6 +53,7 @@ class Network:
                 #get its transmission state and the destination of current frame is being sent to
                 transmission_destination = node.get_frame_destination()
                 transmission_state = node.get_transmission_state()
+
                 node_id = node.get_node_id()
                 node_current_state = self.node_states[node_id]
                 destination_current_state = self.node_states[transmission_destination]
