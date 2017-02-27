@@ -11,7 +11,7 @@ class Node:
         self.num_nodes = num_nodes
         self.frame_queue = Queue()
         # average time required to transmit a frame
-        self.transmission_delay = 3
+        self.transmission_delay = transmission_delay
         # the number of ticks in a second
         self.time_to_ticks = time_to_ticks
         # lambda
@@ -39,6 +39,7 @@ class Node:
         # When the current frame's transmission ends
         self.transmission_ends_tick = 0
         self.medium_in_use = False
+        self.physical_layer_used_by = -1
 
         # Tick when the  transmission state ends
         self.transmission_ends_tick = -1
@@ -78,16 +79,16 @@ class Node:
     # PARAMETERS - current tick, the current tick of the simulation
     # RETURNS - Nothing
     def generate_frame(self, current_tick):
+
         #check if its time to create a frame
         if current_tick >= self.next_frame_generated:
             # update our arrival tick counter, this is the tick when the next frame is created
-            # self.t_arrival_tick += self.calc_arrival_time()
-
+            self.set_next_frame_generated_tick(current_tick)
             # new frame object created with current_tick as the tick it was created at
             frame = Frame(current_tick)
             # enqueue the frame
             self.frame_queue.enqueue(frame)
-            self.set_next_frame_generated_tick(current_tick)
+
 
     def set_collision_occured(self):
         self.collision_occured = True
@@ -102,11 +103,13 @@ class Node:
     def sense_medium_busy(self):
         return self.medium_in_use
 
-    def set_medium_busy(self, busy_until):
+    def set_medium_busy(self, busy_until, node_id):
+        self.physical_layer_used_by = node_id
         self.physical_layer_busy_until = busy_until
         self.medium_in_use = True
     def free_medium(self):
         self.physical_layer_busy_until = -1
+        self.physical_layer_used_by = -1
         self.medium_in_use = False
 
     def update_state(self, current_tick):
@@ -151,7 +154,8 @@ class Node:
         elif self.state == "Transmit":
             # if medium is busy, when we try to transmit a frame or when a collision has already occured
             # we go to the backoff state
-            if self.sense_medium_busy() or self.collision_occured:
+
+            if self.collision_occured:
                 # reset the collision occured flag
                 self.collision_occured = False
                 self.medium_in_use = False
@@ -170,6 +174,9 @@ class Node:
                     # We're not transmitting a frame in backoff, the transmission state should be 0 (state when  not transmitting)
                     self.transmission_state = 0
                     self.backoff_ends_tick = current_tick + wait_time
+            elif self.sense_medium_busy() and self.physical_layer_busy_until - current_tick > 0:
+                self.collision_occured = True
+                self.state = "Backoff"
             else:
                 if current_tick <= self.physical_layer_busy_until:
                     self.transmission_state = 1
@@ -182,11 +189,12 @@ class Node:
 
                 # if transmission is finished, update the total transmission delay
                 # and total number of successful frames transmitted
-                if self.transmission_ends_tick == current_tick:
+                if self.transmission_ends_tick <= current_tick:
                     self.transmission_state = 0
                     delay = self.frame_transmitted.finished_transmission(current_tick)
                     self.total_frames_transmission_delay += delay
                     self.total_frames_successfully_sent += 1
+                    self.transmission_state = 4
                     self.state = "Idle"
                     #if we've finished transmitting a frame, the transmission state should be 0 (state when  not transmitting)
                     self.transmission_state = 0

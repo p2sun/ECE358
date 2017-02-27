@@ -30,8 +30,10 @@ class Frame:
         #LAN speed is Mbits per second, should be in MBits per tick
         LAN_speed_in_seconds = 1e6
         #number of seconds for one tick
+        # 10 us per tick
         seconds_in_ticks = 10e-6
-        #to convert the Mbits per second to Mbits per tick, multiply it by the seconds to tick conversion3
+        # 10 us/tick * 1 Mbit / s
+        # to convert the Mbits per second to Mbits per tick, multiply it by the seconds to tick conversion3
         LAN_speed_in_ticks = LAN_speed_in_seconds * seconds_in_ticks
 
         delay = random.uniform(0, 2**i - 1 ) * 512 / LAN_speed_in_ticks
