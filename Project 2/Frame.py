@@ -1,5 +1,5 @@
-import math
 import random
+
 class Frame:
 
     def __init__(self, frame_generation_tick):

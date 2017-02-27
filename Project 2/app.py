@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import sys, getopt
+import sys
 from Network import Network
 
 def main():
@@ -11,14 +11,13 @@ def main():
     E_D = 0.0
 
 
-
     time_to_ticks = 10e-6
     total_ticks = 10000000  # TICK
-    lambda_factor = 4  # λ
+    lambda_factor = int(sys.argv[2])  # λ
     packet_size = 8000  # L
-    number_of_computers =  4 #N
+    number_of_computers =  int(sys.argv[1]) #N
     LAN_speed = 1000000
-    persistent = False
+    persistent = int(sys.argv[3]) == 1
 
 
 
@@ -34,11 +33,12 @@ def main():
                             persistent=persistent)
 
     #run the simulation five times
-    for i in range(0,3):
+    for i in xrange(0,3):
         results = network_simulation.run_simulation()
         print results
         throughput = results[0]
         delay = results[1]
+        print throughput, delay
 
         E_T += throughput
         E_D += delay
@@ -49,6 +49,6 @@ def main():
     E_D /= 5.0
 
     #print it to console to show the values for the simulation
-    print E_T, E_D
+    print number_of_computers,lambda_factor, E_T, E_D, persistent
 
 main()
